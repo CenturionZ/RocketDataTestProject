@@ -18,6 +18,10 @@ from .models import Employee, Payment
 
 @shared_task
 def pay_employers_task():
+    """
+    Выплата сотрудникам (Employee) соразмерная их зарплатам (salary).
+    Таск устанавливается в админ-панели celery-beat-schedule.
+    """
     staff = Employee.objects.all()
 
     for employee in staff:
@@ -35,4 +39,8 @@ def pay_employers_task():
 
 @shared_task
 def delete_employee_payments_history(id: int):
+    """
+    Делает выборку платежей (Payment) одного сотрудника (employee.id) и удаляет эти записи.
+    :param id: идентификатор пользователя
+    """
     Payment.objects.filter(employee_id=id).delete()

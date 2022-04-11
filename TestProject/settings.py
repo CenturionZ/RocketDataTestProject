@@ -37,12 +37,22 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # REST api
     'rest_framework.apps.RestFrameworkConfig',
     "rest_framework_api_key.apps.RestFrameworkApiKeyConfig",
+
+    # Древовидная структура записей
     'mptt.apps.MpttConfig',
+
+    # DB seeder
     'django_seed',
+
+    # CELERY
     'django_celery_beat',
     'django_celery_results',
+
+    # Apps
     'staff.apps.StaffConfig',
 ]
 
@@ -139,17 +149,6 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CELERY_RESULT_BACKEND = 'django-db'
+# CELERY настройки брокера сообщений
 CELERY_BROKER_URL = os.environ.get('CELERY_BROKER', 'redis://redis:6379/0')
 CELERY_RESULT_BACKEND = os.environ.get('CELERY_BROKER', 'redis://redis:6379/0')
-
-#
-# RABBITMQ = {
-#     "PROTOCOL": "amqp", # in prod change with "amqps"
-#     "HOST": os.getenv("RABBITMQ_HOST", "localhost"),
-#     "PORT": os.getenv("RABBITMQ_PORT", 5672),
-#     "USER": os.getenv("RABBITMQ_USER", "guest"),
-#     "PASSWORD": os.getenv("RABBITMQ_PASSWORD", "guest"),
-# }
-#
-# CELERY_BROKER_URL = f"{RABBITMQ['PROTOCOL']}://{RABBITMQ['USER']}:{RABBITMQ['PASSWORD']}@{RABBITMQ['HOST']}:{RABBITMQ['PORT']}"

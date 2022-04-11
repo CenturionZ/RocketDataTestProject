@@ -38,25 +38,22 @@ class Employee(MPTTModel):
                             related_name='children',
                             verbose_name='Начальник')
 
-    # def get_full_name(self):
-    #     '''
-    #     Returns the first_name plus the last_name, with a space in between.
-    #     '''
-    #     return f'{self.user.first_name} {self.user.last_name} {self.third_name}'
-    #
-    # def get_short_name(self):
-    #     '''
-    #     Returns the short name for the user.
-    #     '''
-    #     return self.first_name
-
     def __str__(self):
         return f'Level {self.get_level()}'
 
     def get_payments(self):
+        """
+        Сумма всех выплат сотруднику
+        :return: int: сумма выплат
+        """
         return sum([item.payment for item in self.payee.get_queryset()])
 
     def save(self, *args, **kwargs):
+        """
+        Переопределённый метод save для ограничения глубины дерева.
+        Проверяет наличие начальника или "уровень" сотрудника от 0 до 4
+        :return:
+        """
         if self.parent == None:
             super(Employee, self).save(*args, **kwargs)
             return
