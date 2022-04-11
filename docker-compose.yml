@@ -1,0 +1,85 @@
+
+services:
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/usr/src/TestProject
+    ports:
+      - "8000:8000"
+    links:
+      - db:db
+#      - rabbitmq
+    environment:
+      - CELERY_BROKER=redis://redis:6379/0
+      - CELERY_BACKEND=redis://redis:6379/0
+    depends_on:
+      - db
+#      - rabbitmq
+      - redis
+      - celery_worker
+      - celery_beat
+
+  db:
+    image: postgres
+    container_name: db
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/posgresql/data/
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_HOST: db
+    ports:
+      - "${DB_PORT:-5432}:5432"
+
+#  rabbitmq:
+#    image: library/rabbitmq:3.9-management
+#    container_name: rabbit_broker
+#    restart: always
+#    ports:
+#        - 5672:5672
+#        - 15672:15672
+
+  celery_beat:
+    container_name: celery_beat
+    restart: always
+    build: .
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_DB: postgres
+      DB_HOST: db
+    links:
+      - redis
+    command: celery -A TestProject beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    depends_on:
+      - redis
+
+  celery_worker:
+    container_name: celery_worker
+    restart: always
+    build: .
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_DB: postgres
+      DB_HOST: db
+    command: celery -A TestProject worker -l info --pool=solo
+    depends_on:
+#      - web
+      - redis
+
+  redis:
+    image: library/redis:alpine
+    container_name: redis
+    restart: always
+
+
+
+volumes:
+  postgres_data:

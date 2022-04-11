@@ -1,0 +1,46 @@
+{% load mptt_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h3>Categories</h3>
+
+<ul>
+    {% recursetree nodes %}
+        <li>
+            <a href="/staff/{{ node.id }}/">
+            Name {{ node.name }}
+            Id {{ node.id }}
+            Level {{ node.employment_level }}
+            Salary {{ node.salary.salary }}
+            </a>
+            {% if node.is_root_node %}
+{#                {% ifequal node.id root_category_id %}#}
+                    {% if not node.is_leaf_node %}
+                        <ul class="children">
+                            Id {{ children }}
+                        </ul>
+                    {% endif %}
+{#                {% endifequal %}#}
+            {% else %}
+                {% if not node.is_leaf_node %}
+                    {% if current_category.id == node.id %}
+                        <ul class="children">
+                            Id {{ children }}
+                        </ul>
+                    {% endif %}
+{#                    {% elif node.level < current_category.level %}#}
+{#                        <ul class="children">#}
+{#                            Id {{ children }}#}
+{#                        </ul>#}
+{#                    {% endif %}#}
+                {% endif %}
+            {% endif %}
+        </li>
+    {% endrecursetree %}
+</ul>
+</body>
+</html>
